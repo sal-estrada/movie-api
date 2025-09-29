@@ -14,6 +14,8 @@ app.use(bodyParser.json());
 app.use(morgan('common'));
 app.use(bodyParser.urlencoded({ extended: true}));
 
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com']
+
 const cors = require('cors');
 app.use(cors());
 
@@ -131,7 +133,7 @@ app.post('/users', [check('username', 'Username is required.').isLength({min:5})
         Users
           .create({
             username: req.body.username,
-            password: req.body.password,
+            password: hashPassword,
             email: req.body.email,
             birthday: req.body.birthday,
             firstName: req.body.firstName,
