@@ -20,8 +20,12 @@ passport.use(
                 if (!user) {
                     console.log('Incorrect username.');
                     return callback(null, false, {
-                        message: 'Incorrect username or password.'
+                        message: 'Incorrect username or password.',
                     });
+                }
+                if (!user.vallidatePassword(password)){
+                    console.log('Incorrect password.');
+                    return callback(null, false, { message: 'Incorrect password.'});
                 }
                 console.log('Finished.');
                 return callback(null, user);

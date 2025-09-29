@@ -3,7 +3,8 @@ const express = require('express'),
   uuid = require('uuid'),
   morgan = require('morgan'),
   mongoose = require('mongoose'),
-  Models = require('./models');
+  Models = require('./models'),
+  { check, validationResult} = require('express-validator');
 
 const app = express(),
   Movies = Models.Movie,
@@ -12,6 +13,10 @@ const app = express(),
 app.use(bodyParser.json());
 app.use(morgan('common'));
 app.use(bodyParser.urlencoded({ extended: true}));
+
+const cors = require('cors');
+app.use(cors());
+
 let auth = require('./auth')(app);
 
 const passport = require('passport');
@@ -103,8 +108,20 @@ app.get('/users/:username',  passport.authenticate('jwt', { session: false}), as
 });
 
 // CREATE USERS
-app.post('/users', async (req, res) => {
-  await Users.findOne({ username: req.body.username})
+app.post('/users', [check('username', 'Username is required.').isLength({min:5}), 
+  check('username','Only alphanumeric values are allowed.').isAlphanumeric(),
+  check('password', 'Password is required.').not().isEmpty(),
+  check('email', 'Email is not valid.').isEmail()], async (req, res) => {
+
+    let errors = validationResult(req);
+
+    if(!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+  
+    let hashedPassword = Users.hashedPassword(req.body.password);
+ 
+    await Users.findOne({ username: req.body.username})
     .then((user) => {
       if (user) {
         return res.status(400).send(req.body.username + 'already exists');
@@ -209,6 +226,7 @@ app.delete('/users/:username', passport.authenticate('jwt', { session: false}), 
     });
 });
 
-app.listen(8080, () => {
-  console.log('Your app is listening on port 8080.');
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0', () => {
+  console.log('Your app is listening on port' + port);
 });
