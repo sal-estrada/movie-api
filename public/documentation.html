@@ -1,16 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title>Index</title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2299.77">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000; min-height: 14.0px}
-    span.s1 {font-kerning: none}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Flix documentation</title>
+  <link rel="stylesheet" type="text/css" href="/css/styles.css"> 
 </head>
 <body>
   <h1>Movie API</h1>
@@ -29,40 +23,49 @@
     </tr>
 
     <tr>
+      <td>Welcome screen</td>
+      <td>GET</td>
+      <td>/</td>
+      <td>None</td>
+      <td>None</td>
+      <td>Welcome message!</td>
+    </tr><br> 
+
+    <tr>
       <td>Returns a list of all movies</td>
       <td>GET</td>
       <td>/movies</td>
       <td>None</td>
       <td>None</td>
-      <td>Array of movie objects</td>
-    </tr>
+      <td>Array of movie objects.</td>
+    </tr><br> 
 
     <tr>
       <td>Returns movie details by title</td>
       <td>GET</td>
       <td>/movies/:title</td>
-      <td>title (movie title)</td>
+      <td>Movie title</td>
       <td>None</td>
-      <td>Movie object with title, description, genre, director, imageURL, featured</td>
-    </tr>
+      <td>Movie object with title, description, genre, director, actors, imageURL.</td>
+    </tr><br> 
 
     <tr>
       <td>Returns genre description by name</td>
       <td>GET</td>
-      <td>/genres/:genreName</td>
-      <td>name (genre name)</td>
+      <td>/movies/genre/:genreName</td>
+      <td>Genre name</td>
       <td>None</td>
-      <td>Genre object with name and description</td>
-    </tr>
+      <td>Genre object with name, description and list of movies under genre.</td>
+    </tr><br> 
 
     <tr>
       <td>Returns director information by name</td>
       <td>GET</td>
-      <td>/directors/:directorName</td>
-      <td>name (director's name)</td>
+      <td>/movies/directors/:directorName</td>
+      <td>Director's name</td>
       <td>None</td>
-      <td>Director object with bio, birth year, death year</td>
-    </tr>
+      <td>Director object with bio, birth year, death year.</td>
+    </tr><br> 
   </table>
 
   <h2> User Endpoints</h2>
@@ -75,7 +78,25 @@
       <th>Query Parameters</th>
       <th>Request Body (Example)</th>
       <th>Response</th>
-    </tr>
+    </tr><br> 
+
+    <tr>
+      <td>Provide list of all users.</td>
+      <td>GET</td>
+      <td>None</td>
+      <td>username</td>
+      <td>None</td>
+      <td>JSON file with list of all users.</td>
+    </tr><br> 
+
+   <tr>
+      <td>Provide individual users.</td>
+      <td>GET</td>
+      <td>/users/:username</td>
+      <td>Username</td>
+      <td>None</td>
+      <td>JSON file with list of single user.</td>
+    </tr><br> 
 
     <tr>
       <td>Register a new user</td>
@@ -83,57 +104,63 @@
       <td>/users</td>
       <td>None</td>
       <td>
-          Format: JSON <br> <br>
-          Example:  <br> <br>
-        {
-          "username": "john_doe",<br>
-          "email": "john@example.com",<br>
-          "password": "secure123"
+          Format: JSON <br> 
+        {<br>
+          "username": "alice123", <br>
+          "password": "password123",<br>
+          "email": "alice@test.com",<br>
+          "birthday": "01012001",<br>
+          "firstName": "Alice",<br>
+          "lastName": "Bell"<br>
         }
       </td>
-      <td>Confirmation message or created user object</td>
-    </tr>
+      <td>Confirmation message or created user object.</td>
+    </tr><br> 
 
     <tr>
       <td>Update user information</td>
       <td>PUT</td>
-      <td>/users/:id</td>
+      <td>/users/:username</td>
       <td>username (current username)</td>
       <td>
           Format: JSON  <br> <br>
-          Example: <br> <br>
-        {
-          "username": "new_name"
-        }
+          {<br>
+            username: ,<br>
+            password: ,<br>
+            email: ,<br>
+            birthday: ,<br>
+            firstName: ,<br>
+            lastName: <br>
+          }
       </td>
-      <td>Updated user object</td>
-    </tr>
+      <td>Updated user property.</td>
+    </tr><br> 
 
     <tr>
       <td>Add a movie to user’s favorites</td>
       <td>POST</td>
-      <td>/users/:id/:movieTitle</td>
+      <td>/users/:username/movies/:moviesID</td>
       <td>username, movieID</td>
       <td>None</td>
-      <td>Text: "Movie has been added to user array."</td>
-    </tr>
+      <td>Updated JSON file to show added movie.</td>
+    </tr><br> 
 
     <tr>
       <td>Remove a movie from user’s favorites</td>
       <td>DELETE</td>
-      <td>/users/:id/:movieTitle</td>
+      <td>/users/:username/movies/:moviesID</td>
       <td>username, movieID</td>
       <td>None</td>
-      <td>Text: "Movie has been removed from users array."</td>
-    </tr>
+      <td>Updated JSON file to show deleted movie.</td>
+    </tr><br> 
 
     <tr>
       <td>Deregister an existing user</td>
       <td>DELETE</td>
-      <td>/users/:id</td>
+      <td>/users/username</td>
       <td>username</td>
       <td>None</td>
-      <td>Text: "User has been removed from database."</td>
+      <td>"Username was deleted."</td>
     </tr>
   </table>
 </body>
