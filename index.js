@@ -11,6 +11,11 @@ const app = express(),
 
 app.use(bodyParser.json());
 app.use(morgan('common'));
+app.use(bodyParser.urlencoded({ extended: true}));
+let auth = require('./auth')(app);
+
+const passport = require('passport');
+require('./passport');
 
 mongoose.connect('mongodb://localhost:27017/mfDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -23,7 +28,7 @@ app.get('/', (req, res) => {
 
 
 // READ ALL MOVIES
-app.get('/movies', async (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false}), async (req, res) => {
   await Movies.find()
     .then((movies) => {
       res.status(201).json(movies);
@@ -35,7 +40,7 @@ app.get('/movies', async (req, res) => {
 });
 
 // READ MOVIE BY TITLE
-app.get('/movies/:title', async (req, res) => {
+app.get('/movies/:title', passport.authenticate('jwt', { session: false}), async (req, res) => {
   await Movies.findOne({ Title: req.params.title })
     .then((movie) => {
       if(!movie) {
@@ -50,7 +55,7 @@ app.get('/movies/:title', async (req, res) => {
 });
 
 // READ MOVIES BASED ON GENRE
-app.get('/movies/genre/:genreName', async (req, res) => {
+app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: false}), async (req, res) => {
   await Movies.find( { "Genre.Name": req.params.genreName})
     .then((movies) => {
       res.status(200).json(movies);
@@ -62,7 +67,7 @@ app.get('/movies/genre/:genreName', async (req, res) => {
 });
 
 // RETURN DATA ABOUT DIRECTOR
-app.get('/movies/directors/:directorName', async (req, res) => {
+app.get('/movies/directors/:directorName', passport.authenticate('jwt', { session: false}), async (req, res) => {
   await Movies.find( { "Director.Name": req.params.directorName}, { "Director": 1})
     .then((movies) => {
       res.status(200).json(movies);
@@ -74,7 +79,7 @@ app.get('/movies/directors/:directorName', async (req, res) => {
 });
 
 // READ USERS 
-app.get('/users', async (req, res) => {
+app.get('/users', passport.authenticate('jwt', { session: false}), async (req, res) => {
   await Users.find()
     .then((users) => {
       res.status(201).json(users);
@@ -86,7 +91,7 @@ app.get('/users', async (req, res) => {
 });
 
 //READ INDIVUAL USER
-app.get('/users/:username', async (req, res) => {
+app.get('/users/:username',  passport.authenticate('jwt', { session: false}), async (req, res) => {
   await Users.findOne({ username: req.params.username })
     .then((user) => {
       res.json(user);
@@ -115,19 +120,23 @@ app.post('/users', async (req, res) => {
           })
           .then((user) => {res.status(201).json(user) })
         .catch((error) => {
-          console.error(error);
+          console.error(err);
           res.status(500).send('Error: ' + error);
         })
       }
     })
-.catch((error) => {
-  console.error(error);
+.catch((err) => {
+  console.error(err);
   res.status(500).send('Error: ' + error);
   });
 });
 
 //UPDATE USERS
-app.put('/users/:username', async (req, res) => {
+app.put('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  if(req.user.username !== req.params.username) {
+      return res.status(400).send('Permission denied.');
+  }
+
   await Users.findOneAndUpdate({ username: req.params.username}, { $set:
     {
       username: req.body.username,
@@ -149,7 +158,7 @@ app.put('/users/:username', async (req, res) => {
 });
 
 // ADD FAVORITE MOVIE TO USER LIST 
-app.post('/users/:username/movies/:moviesID', async (req, res) => {
+app.post('/users/:username/movies/:moviesID', passport.authenticate('jwt', { session: false}),  async (req, res) => {
   await Users.findOneAndUpdate({ username: req.params.username }, {
     $push: { favoriteMovieIds: new mongoose.Types.ObjectId(req.params.moviesID) }
   },
@@ -167,7 +176,7 @@ app.post('/users/:username/movies/:moviesID', async (req, res) => {
 });
 
 // REMOVE FAVORITE MOVIE FROM USER LIST 
-app.delete('/users/:username/movies/:moviesID', async (req, res) => {
+app.delete('/users/:username/movies/:moviesID', passport.authenticate('jwt', { session: false}), async (req, res) => {
   await Users.findOneAndUpdate({ username: req.params.username }, {
     $pull: { favoriteMovieIds: new mongoose.Types.ObjectId(req.params.moviesID) }
   },
@@ -185,7 +194,7 @@ app.delete('/users/:username/movies/:moviesID', async (req, res) => {
 });
 
 // DELETE BY USERNAME
-app.delete('/users/:username', async (req, res) => {
+app.delete('/users/:username', passport.authenticate('jwt', { session: false}), async (req, res) => {
   await Users.findOneAndDelete({ username: req.params.username })
     .then((user) => {
       if (!user) {
