@@ -153,7 +153,10 @@ app.post('/users', [check('username', 'Username is required.').isLength({min:5})
 });
 
 //UPDATE USERS
-app.put('/users/:username', passport.authenticate('jwt', { session: false }), async (req, res) => {
+app.put('/users/:username', [check('username', 'Username is required.').isLength({min:5}), 
+  check('username','Only alphanumeric values are allowed.').isAlphanumeric(),
+  check('password', 'Password is required.').not().isEmpty(),
+  check('email', 'Email is not valid.').isEmail()], passport.authenticate('jwt', { session: false }), async (req, res) => {
   if(req.user.username !== req.params.username) {
       return res.status(400).send('Permission denied.');
   }
