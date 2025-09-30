@@ -23,7 +23,7 @@ passport.use(
                         message: 'Incorrect username or password.',
                     });
                 }
-                if (!user.vallidatePassword(password)){
+                if (!user.validatePassword(password)){
                     console.log('Incorrect password.');
                     return callback(null, false, { message: 'Incorrect password.'});
                 }
