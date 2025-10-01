@@ -1,0 +1,177 @@
+# myFlix Movie API
+This a movie API. It powers the backed of my myFlix application. It provides movie informaiton including name, genre, actors, and directors. Users can create an account and browse through the movie options and add their favorite movies. This was created using the backend of the MERN Stack (MongoDB, Express, and Node).
+
+## Project Overview
+I built the myFlix Movie API to deliver data related to movies, directors, and genres. It allows users to sign up, manage their profile, and save their favorite movies. The API is structured as a RESTful service with various endpoints to manage user data and movie-related information.
+
+## Features
+● Return a list of ALL movies to the user
+● Return data (description, genre, director, image URL, whether it’s featured or not) about a single movie by title to the user
+● Return data about a genre (description) by name/title (e.g., “Thriller”)
+● Return data about a director (bio, birth year, death year) by name
+● Allow new users to register
+● Allow users to update their user info (username, password, email, date of birth)
+● Allow users to add a movie to their list of favorites
+● Allow users to remove a movie from their list of favorites
+● Allow existing users to deregister
+
+## Technical Requirements 
+● Node.js
+● Expres.js
+● Essential Middlewares
+● MongoDB
+
+## API Endpoints
+  <h2> Movie Endpoints</h2>
+
+  <table>
+    <tr>
+      <th>Description</th>
+      <th>Method</th>
+      <th>Endpoint</th>
+      <th>Query Parameters</th>
+      <th>Request Body (Example)</th>
+      <th>Response</th>
+    </tr>
+
+    <tr>
+      <td>Welcome screen</td>
+      <td>GET</td>
+      <td>/</td>
+      <td>None</td>
+      <td>None</td>
+      <td>Welcome message!</td>
+    </tr><br> 
+
+    <tr>
+      <td>Returns a list of all movies</td>
+      <td>GET</td>
+      <td>/movies</td>
+      <td>None</td>
+      <td>None</td>
+      <td>Array of movie objects.</td>
+    </tr><br> 
+
+    <tr>
+      <td>Returns movie details by title</td>
+      <td>GET</td>
+      <td>/movies/:title</td>
+      <td>Movie title</td>
+      <td>None</td>
+      <td>Movie object with title, description, genre, director, actors, imageURL.</td>
+    </tr><br> 
+
+    <tr>
+      <td>Returns genre description by name</td>
+      <td>GET</td>
+      <td>/movies/genre/:genreName</td>
+      <td>Genre name</td>
+      <td>None</td>
+      <td>Genre object with name, description and list of movies under genre.</td>
+    </tr><br> 
+
+    <tr>
+      <td>Returns director information by name</td>
+      <td>GET</td>
+      <td>/movies/directors/:directorName</td>
+      <td>Director's name</td>
+      <td>None</td>
+      <td>Director object with bio, birth year, death year.</td>
+    </tr><br> 
+  </table>
+
+  <h2> User Endpoints</h2>
+
+  <table>
+    <tr>
+      <th>Description</th>
+      <th>Method</th>
+      <th>Endpoint</th>
+      <th>Query Parameters</th>
+      <th>Request Body (Example)</th>
+      <th>Response</th>
+    </tr><br> 
+
+    <tr>
+      <td>Provide list of all users.</td>
+      <td>GET</td>
+      <td>None</td>
+      <td>username</td>
+      <td>None</td>
+      <td>JSON file with list of all users.</td>
+    </tr><br> 
+
+   <tr>
+      <td>Provide individual users.</td>
+      <td>GET</td>
+      <td>/users/:username</td>
+      <td>Username</td>
+      <td>None</td>
+      <td>JSON file with list of single user.</td>
+    </tr><br> 
+
+    <tr>
+      <td>Register a new user</td>
+      <td>POST</td>
+      <td>/users</td>
+      <td>None</td>
+      <td>
+          Format: JSON <br> 
+        {<br>
+          "username": "alice123", <br>
+          "password": "password123",<br>
+          "email": "alice@test.com",<br>
+          "birthday": "01012001",<br>
+          "firstName": "Alice",<br>
+          "lastName": "Bell"<br>
+        }
+      </td>
+      <td>Confirmation message or created user object.</td>
+    </tr><br> 
+
+    <tr>
+      <td>Update user information</td>
+      <td>PUT</td>
+      <td>/users/:username</td>
+      <td>username (current username)</td>
+      <td>
+          Format: JSON  <br> <br>
+          {<br>
+            username: ,<br>
+            password: ,<br>
+            email: ,<br>
+            birthday: ,<br>
+            firstName: ,<br>
+            lastName: <br>
+          }
+      </td>
+      <td>Updated user property.</td>
+    </tr><br> 
+
+    <tr>
+      <td>Add a movie to user’s favorites</td>
+      <td>POST</td>
+      <td>/users/:username/movies/:moviesID</td>
+      <td>username, movieID</td>
+      <td>None</td>
+      <td>Updated JSON file to show added movie.</td>
+    </tr><br> 
+
+    <tr>
+      <td>Remove a movie from user’s favorites</td>
+      <td>DELETE</td>
+      <td>/users/:username/movies/:moviesID</td>
+      <td>username, movieID</td>
+      <td>None</td>
+      <td>Updated JSON file to show deleted movie.</td>
+    </tr><br> 
+
+    <tr>
+      <td>Deregister an existing user</td>
+      <td>DELETE</td>
+      <td>/users/username</td>
+      <td>username</td>
+      <td>None</td>
+      <td>"Username was deleted."</td>
+    </tr>
+  </table>
