@@ -22,3 +22,11 @@ I built the myFlix Movie API to deliver data related to movies, directors, and g
 ● MongoDB<br>
 
 ## API Endpoints
+### Movie Endpoints
+<img width="1917" height="233" alt="movie_endpoints" src="https://github.com/user-attachments/assets/f8af15bc-aaf1-4174-ab43-3eaf3e54706d" />
+
+### User Endpoints
+<img width="1912" height="603" alt="user_endpoints" src="https://github.com/user-attachments/assets/dd580752-e150-47d7-8303-ab3354d3a4c1" />
+
+
+
