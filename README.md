@@ -28,5 +28,11 @@ I built the myFlix Movie API to deliver data related to movies, directors, and g
 ### User Endpoints
 <img width="1912" height="603" alt="user_endpoints" src="https://github.com/user-attachments/assets/dd580752-e150-47d7-8303-ab3354d3a4c1" />
 
+## Technologies
+● Backend: Node.js, Express
+● Database: MongoDB with Mongoose
+● Testing: Postman
+● Deployment: Heroku
+● Middleware: body-parser, morgan, and other Express middleware
 
 
