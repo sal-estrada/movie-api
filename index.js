@@ -44,7 +44,7 @@ app.get('/movies', passport.authenticate('jwt', { session: false}), async (req, 
   })
   .catch((err) => {
     console.error(err);
-    res.status(500).send('Error: ' + err);
+    res.status(500).json({ error: err.message });
   });
 });
 
@@ -53,13 +53,13 @@ app.get('/movies/:title', passport.authenticate('jwt', { session: false}), async
   await Movies.findOne({ Title: req.params.title })
     .then((movie) => {
       if(!movie) {
-        return res.status(404).send("No such movie.");
+        return res.status(404).json({ error: "No such movie." });
       }
       res.status(200).json(movie);
   })
   .catch((err) => {
     console.error(err);
-    res.status(500).send('Error: ' + err);
+    res.status(500).json({ error: err.message });
   });
 });
 
@@ -71,7 +71,7 @@ app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: fals
   })
   .catch((err) => {
     console.error(err);
-    res.status(404).send('Error: ' + err);
+    res.status(404).json({ error: err.message });
   });
 });
 
@@ -83,7 +83,7 @@ app.get('/movies/directors/:directorName', passport.authenticate('jwt', { sessio
   })
   .catch((err) => {
     console.error(err);
-    res.status(404).send('Error: ' + err);
+    res.status(404).json({ error: err.message });
   });
 });
 
@@ -95,7 +95,7 @@ app.get('/users', passport.authenticate('jwt', { session: false}), async (req, r
   })
   .catch((err) => {
     console.error(err);
-    res.status(500).send('Error: ' + err);
+    res.status(500).json({ error: err.message });
   });
 });
 
@@ -107,7 +107,7 @@ app.get('/users/:username',  passport.authenticate('jwt', { session: false}), as
     })
     .catch((err) => { 
       console.error(err);
-      res.status(500).send('Error: ' + err);
+    res.status(500).json({ error: err.message });
  });
 });
 
@@ -158,7 +158,7 @@ app.put('/users/:username', [check('username', 'Username is required.').isLength
   check('password', 'Password is required.').not().isEmpty(),
   check('email', 'Email is not valid.').isEmail()], passport.authenticate('jwt', { session: false }), async (req, res) => {
   if(req.user.username !== req.params.username) {
-      return res.status(400).send('Permission denied.');
+      return res.status(400).json({ error: 'Permission denied.' });
   }
 
   await Users.findOneAndUpdate({ username: req.params.username}, { $set:
@@ -177,7 +177,7 @@ app.put('/users/:username', [check('username', 'Username is required.').isLength
 })
 .catch((err) => {
   console.error(err);
-  res.status(500).send('Error: ' + error);
+    res.status(500).send('Error: ' + err);
   })
 });
 
@@ -189,7 +189,7 @@ app.post('/users/:username/movies/:moviesID', passport.authenticate('jwt', { ses
   { new: true })
   .then((updatedUser) => {
     if (!updatedUser) {
-      return res.status(404).send("User not found.");
+      return res.status(404).json({ error: "User not found." });
     }
     res.json(updatedUser);
   })
@@ -207,7 +207,7 @@ app.delete('/users/:username/movies/:moviesID', passport.authenticate('jwt', { s
   { new: true })
   .then((updatedUser) => {
     if (!updatedUser) {
-      return res.status(404).send("User not found.");
+      return res.status(404).json({ error: "User not found." });
     }
     res.json(updatedUser);
   })
@@ -222,9 +222,9 @@ app.delete('/users/:username', passport.authenticate('jwt', { session: false}), 
   await Users.findOneAndDelete({ username: req.params.username })
     .then((user) => {
       if (!user) {
-        res.status(400).send(req.params.username + ' was not found.');
+        res.status(400).json({ message: `${req.params.username} was not found.` });
       } else {
-        res.status(200).send(req.params.username + " was deleted.");
+        res.status(200).json({ message: `${req.params.username} was deleted.` });
       }
     })
     .catch((err) => {
