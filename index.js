@@ -37,7 +37,7 @@ app.get('/', (req, res) => {
 
 
 // READ ALL MOVIES
-app.get('/movies', async (req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false}), async (req, res) => {
   await Movies.find()
     .then((movies) => {
       res.status(201).json(movies);
@@ -128,7 +128,7 @@ app.post('/users', [check('username', 'Username is required.').isLength({min:5})
     await Users.findOne({ username: req.body.username})
     .then((user) => {
       if (user) {
-        return res.status(400).send(req.body.username + 'already exists');
+        return res.status(400).json({error: `${req.body.username} + already exists`});
       } else {
         Users
           .create({
@@ -148,7 +148,7 @@ app.post('/users', [check('username', 'Username is required.').isLength({min:5})
     })
 .catch((err) => {
   console.error(err);
-  res.status(500).send('Error: ' + error);
+  res.status(500).send('Error: ' + err);
   });
 });
 
