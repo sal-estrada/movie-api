@@ -4,7 +4,8 @@ const express = require('express'),
   morgan = require('morgan'),
   mongoose = require('mongoose'),
   Models = require('./models'),
-  { check, validationResult} = require('express-validator');
+  { check, validationResult} = require('express-validator'),
+  cors = require('cors');
 
 const app = express(),
   Movies = Models.Movie,
@@ -14,9 +15,8 @@ app.use(bodyParser.json());
 app.use(morgan('common'));
 app.use(bodyParser.urlencoded({ extended: true}));
 
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com']
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:3000']
 
-const cors = require('cors');
 app.use(cors());
 
 let auth = require('./auth')(app);
@@ -40,11 +40,11 @@ app.get('/', (req, res) => {
 app.get('/movies', passport.authenticate('jwt', { session: false}), async (req, res) => {
   await Movies.find()
     .then((movies) => {
-      res.status(201).json(movies);
+      res.status(200).json(movies);
   })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+  .catch((error) => {
+    console.error(error);
+    res.status(500).json({ error: error.message });
   });
 });
 
@@ -57,9 +57,9 @@ app.get('/movies/:title', passport.authenticate('jwt', { session: false}), async
       }
       res.status(200).json(movie);
   })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+  .catch((error) => {
+    console.error(error);
+    res.status(500).json({ error: error.message });
   });
 });
 
@@ -69,9 +69,9 @@ app.get('/movies/genre/:genreName', passport.authenticate('jwt', { session: fals
     .then((movies) => {
       res.status(200).json(movies);
   })
-  .catch((err) => {
-    console.error(err);
-    res.status(404).json({ error: err.message });
+  .catch((error) => {
+    console.error(error);
+    res.status(404).json({ error: error.message });
   });
 });
 
@@ -81,9 +81,9 @@ app.get('/movies/directors/:directorName', passport.authenticate('jwt', { sessio
     .then((movies) => {
       res.status(200).json(movies);
   })
-  .catch((err) => {
-    console.error(err);
-    res.status(404).json({ error: err.message });
+  .catch((error) => {
+    console.error(error);
+    res.status(404).json({ error: error.message });
   });
 });
 
@@ -91,11 +91,11 @@ app.get('/movies/directors/:directorName', passport.authenticate('jwt', { sessio
 app.get('/users', passport.authenticate('jwt', { session: false}), async (req, res) => {
   await Users.find()
     .then((users) => {
-      res.status(201).json(users);
+      res.status(200).json(users);
   })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+  .catch((error) => {
+    console.error(error);
+    res.status(500).json({ error: error.message });
   });
 });
 
@@ -105,9 +105,9 @@ app.get('/users/:username',  passport.authenticate('jwt', { session: false}), as
     .then((user) => {
       res.json(user);
     })
-    .catch((err) => { 
-      console.error(err);
-    res.status(500).json({ error: err.message });
+    .catch((error) => { 
+      console.error(error);
+    res.status(500).json({ error: error.message });
  });
 });
 
@@ -128,7 +128,7 @@ app.post('/users', [check('username', 'Username is required.').isLength({min:5})
     await Users.findOne({ username: req.body.username})
     .then((user) => {
       if (user) {
-        return res.status(400).json({error: `${req.body.username} + already exists`});
+        return res.status(400).json({error: `${req.body.username} already exists`});
       } else {
         Users
           .create({
@@ -141,14 +141,14 @@ app.post('/users', [check('username', 'Username is required.').isLength({min:5})
           })
           .then((user) => {res.status(201).json(user) })
         .catch((error) => {
-          console.error(err);
+          console.error(error);
           res.status(500).send('Error: ' + error);
         })
       }
     })
-.catch((err) => {
-  console.error(err);
-  res.status(500).send('Error: ' + err);
+.catch((error) => {
+  console.error(error);
+  res.status(500).send('Error: ' + error);
   });
 });
 
@@ -157,28 +157,37 @@ app.put('/users/:username', [check('username', 'Username is required.').isLength
   check('username','Only alphanumeric values are allowed.').isAlphanumeric(),
   check('password', 'Password is required.').not().isEmpty(),
   check('email', 'Email is not valid.').isEmail()], passport.authenticate('jwt', { session: false }), async (req, res) => {
+  
+  let errors = validationResult(req);
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
+  }
+
   if(req.user.username !== req.params.username) {
       return res.status(400).json({ error: 'Permission denied.' });
   }
 
+  let hashPassword = Users.hashPassword(req.body.password);
+
   await Users.findOneAndUpdate({ username: req.params.username}, { $set:
     {
       username: req.body.username,
-      password: req.body.password,
+      password: hashPassword,
       email: req.body.email,
       birthday: req.body.birthday,
       firstName: req.body.firstName,
       lastName: req.body.lastName
     }
   },
-{ new: true}) // <-- to make sure updated data is returned and not the old one
+{ new: true})
 .then((updatedUser) => {
   res.json(updatedUser);
 })
-.catch((err) => {
-  console.error(err);
-    res.status(500).send('Error: ' + err);
+.catch((error) => {
+  console.error(error);
+    res.status(500).send('Error: ' + error);
   })
+});
 });
 
 // ADD FAVORITE MOVIE TO USER LIST 
@@ -193,9 +202,9 @@ app.post('/users/:username/movies/:moviesID', passport.authenticate('jwt', { ses
     }
     res.json(updatedUser);
   })
-  .catch((err) => {
-    console.error(err);
-    res.status(404).send('Error: ' + err);
+  .catch((error) => {
+    console.error(error);
+    res.status(404).send('Error: ' + error);
   });
 });
 
@@ -211,9 +220,9 @@ app.delete('/users/:username/movies/:moviesID', passport.authenticate('jwt', { s
     }
     res.json(updatedUser);
   })
-  .catch((err) => {
-    console.error(err);
-    res.status(404).send('Error: ' + err);
+  .catch((error) => {
+    console.error(error);
+    res.status(404).send('Error: ' + error);
   });
 });
 
@@ -227,9 +236,9 @@ app.delete('/users/:username', passport.authenticate('jwt', { session: false}), 
         res.status(200).json({ message: `${req.params.username} was deleted.` });
       }
     })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send('Error: ' + err);
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send('Error: ' + error);
     });
 });
 

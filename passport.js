@@ -14,7 +14,7 @@ passport.use(
             passwordField: 'password',
         },
         async (username, password, callback) => {
-            console.log(`${username} ${password}`);
+            console.log(`Login attempt for user: ${username}`);
             await Users.findOne({ username: username })
             .then((user) => {
                 if (!user) {
