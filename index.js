@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(morgan('common'));
 app.use(bodyParser.urlencoded({ extended: true}));
 
-let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:3000']
+let allowedOrigins = ['http://localhost:8080', 'http://testsite.com', 'http://localhost:3000','http://localhost:4200']
 
 app.use(cors());
 
