@@ -188,7 +188,6 @@ app.put('/users/:username', [check('username', 'Username is required.').isLength
     res.status(500).send('Error: ' + error);
   })
 });
-});
 
 // ADD FAVORITE MOVIE TO USER LIST 
 app.post('/users/:username/movies/:moviesID', passport.authenticate('jwt', { session: false}),  async (req, res) => {
